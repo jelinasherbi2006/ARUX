@@ -1,14 +1,28 @@
 import { useState } from "react";
 import Register from "./Register";
+import Login from "./LoginPage.jsx";
 
 function App() {
-  const [showRegister, setShowRegister] = useState(false);
+  const [page, setPage] = useState("home");
 
-  // Show registration page
-  if (showRegister) {
+  // REGISTER PAGE
+  if (page === "register") {
     return <Register />;
   }
 
+  // LOGIN PAGE
+  if (page === "login") {
+    return (
+      <Login
+        onLoginSuccess={(student) => {
+          alert(`Welcome ${student.full_name}!`);
+          setPage("home");
+        }}
+      />
+    );
+  }
+
+  // HOME PAGE
   return (
     <div
       style={{
@@ -20,7 +34,7 @@ function App() {
         boxSizing: "border-box",
       }}
     >
-      {/* Header */}
+      {/* HEADER */}
       <header
         style={{
           display: "flex",
@@ -41,24 +55,26 @@ function App() {
         </h1>
 
         <button
+          onClick={() => setPage("login")}
           style={{
-            padding: "12px 22px",
+            padding: "12px 24px",
             borderRadius: "8px",
             border: "1px solid #4f7cff",
             background: "transparent",
             color: "white",
             cursor: "pointer",
+            fontSize: "15px",
           }}
         >
           Login
         </button>
       </header>
 
-      {/* Hero Section */}
+      {/* HERO SECTION */}
       <main
         style={{
           maxWidth: "1200px",
-          margin: "100px auto",
+          margin: "100px auto 80px auto",
           textAlign: "center",
         }}
       >
@@ -67,6 +83,7 @@ function App() {
             color: "#6ea8ff",
             fontSize: "16px",
             letterSpacing: "2px",
+            marginBottom: "20px",
           }}
         >
           AI-POWERED CAREER INTELLIGENCE
@@ -75,50 +92,60 @@ function App() {
         <h2
           style={{
             fontSize: "56px",
-            margin: "20px 0",
-            lineHeight: "1.1",
+            margin: "0 0 25px 0",
+            lineHeight: "1.15",
             color: "white",
+            fontWeight: "700",
           }}
         >
           Discover Your
           <br />
-          <span style={{ color: "#4f8cff" }}>Career DNA</span>
+          <span style={{ color: "#4f8cff" }}>
+            Career DNA
+          </span>
         </h2>
 
         <p
           style={{
-            maxWidth: "650px",
+            maxWidth: "700px",
             margin: "0 auto",
             color: "#aab4cc",
             fontSize: "18px",
-            lineHeight: "1.6",
+            lineHeight: "1.7",
           }}
         >
-          ARUX analyzes your skills, performance, interests and
-          learning progress to build a continuously evolving
-          career profile and guide your next career move.
+          ARUX analyzes your skills, performance, interests
+          and learning progress to build a continuously
+          evolving career profile and guide your next career move.
         </p>
 
-        {/* Get Started Button */}
-        <button
-          onClick={() => setShowRegister(true)}
+        {/* ONLY GET STARTED BUTTON */}
+        <div
           style={{
+            display: "flex",
+            justifyContent: "center",
             marginTop: "35px",
-            padding: "15px 32px",
-            borderRadius: "10px",
-            border: "none",
-            background: "#4f8cff",
-            color: "white",
-            fontSize: "16px",
-            fontWeight: "bold",
-            cursor: "pointer",
           }}
         >
-          Get Started
-        </button>
+          <button
+            onClick={() => setPage("register")}
+            style={{
+              padding: "15px 34px",
+              borderRadius: "10px",
+              border: "none",
+              background: "#4f8cff",
+              color: "white",
+              fontSize: "16px",
+              fontWeight: "bold",
+              cursor: "pointer",
+            }}
+          >
+            Get Started
+          </button>
+        </div>
       </main>
 
-      {/* Feature Cards */}
+      {/* FEATURE CARDS */}
       <section
         style={{
           maxWidth: "1200px",
@@ -128,21 +155,30 @@ function App() {
           gap: "20px",
         }}
       >
-        {/* Career DNA */}
+        {/* CAREER DNA */}
         <div
           style={{
             background: "#11182b",
-            padding: "28px",
+            padding: "30px",
             borderRadius: "16px",
             border: "1px solid #202b45",
+            textAlign: "center",
           }}
         >
-          <h3>🧬 Career DNA</h3>
+          <h3
+            style={{
+              fontSize: "22px",
+              marginBottom: "15px",
+            }}
+          >
+            Career DNA
+          </h3>
 
           <p
             style={{
               color: "#aab4cc",
               lineHeight: "1.6",
+              margin: 0,
             }}
           >
             Build a dynamic profile based on your skills,
@@ -150,47 +186,65 @@ function App() {
           </p>
         </div>
 
-        {/* Skill Gap */}
+        {/* SKILL GAP */}
         <div
           style={{
             background: "#11182b",
-            padding: "28px",
+            padding: "30px",
             borderRadius: "16px",
             border: "1px solid #202b45",
+            textAlign: "center",
           }}
         >
-          <h3>🎯 Skill Gap Analysis</h3>
+          <h3
+            style={{
+              fontSize: "22px",
+              marginBottom: "15px",
+            }}
+          >
+            Skill Gap Analysis
+          </h3>
 
           <p
             style={{
               color: "#aab4cc",
               lineHeight: "1.6",
+              margin: 0,
             }}
           >
-            Identify the skills you need to develop for your
-            target career.
+            Identify the skills you need to develop for
+            your target career.
           </p>
         </div>
 
-        {/* Career Matching */}
+        {/* CAREER MATCHING */}
         <div
           style={{
             background: "#11182b",
-            padding: "28px",
+            padding: "30px",
             borderRadius: "16px",
             border: "1px solid #202b45",
+            textAlign: "center",
           }}
         >
-          <h3>🚀 Career Matching</h3>
+          <h3
+            style={{
+              fontSize: "22px",
+              marginBottom: "15px",
+            }}
+          >
+            Career Matching
+          </h3>
 
           <p
             style={{
               color: "#aab4cc",
               lineHeight: "1.6",
+              margin: 0,
             }}
           >
-            Discover career paths and opportunities that match
-            your evolving profile.
+            Discover career paths and opportunities that
+            match your evolving profile.
           </p>
         </div>
       </section>

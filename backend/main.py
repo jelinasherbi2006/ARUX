@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from pwdlib import PasswordHash
@@ -10,7 +10,6 @@ load_dotenv()
 
 app = FastAPI()
 
-# Allow React frontend to communicate with FastAPI
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173"],
@@ -19,11 +18,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Password hashing
 password_hash = PasswordHash.recommended()
 
 
-# Student registration data
+# -----------------------------
+# Student Registration Model
+# -----------------------------
+
 class Student(BaseModel):
     full_name: str
     email: str
@@ -33,16 +34,21 @@ class Student(BaseModel):
     year_of_study: int
 
 
-# Home
-@app.get("/")
-def home():
-    return {"message": "Welcome to ARUX!"}
+# -----------------------------
+# Login Model
+# -----------------------------
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
 
 
-# Database connection test
-@app.get("/db-test")
-def db_test():
-    connection = psycopg2.connect(
+# -----------------------------
+# Database Connection
+# -----------------------------
+
+def get_connection():
+    return psycopg2.connect(
         host=os.getenv("DB_HOST"),
         port=os.getenv("DB_PORT"),
         database=os.getenv("DB_NAME"),
@@ -50,9 +56,31 @@ def db_test():
         password=os.getenv("DB_PASSWORD")
     )
 
+
+# -----------------------------
+# Home
+# -----------------------------
+
+@app.get("/")
+def home():
+    return {"message": "Welcome to ARUX!"}
+
+
+# -----------------------------
+# Database Test
+# -----------------------------
+
+@app.get("/db-test")
+def db_test():
+
+    connection = get_connection()
+
     cursor = connection.cursor()
 
-    cursor.execute("SELECT current_database(), current_user;")
+    cursor.execute(
+        "SELECT current_database(), current_user;"
+    )
+
     result = cursor.fetchone()
 
     cursor.close()
@@ -65,27 +93,32 @@ def db_test():
     }
 
 
-# Create student profile
+# -----------------------------
+# Student Registration
+# -----------------------------
+
 @app.post("/students")
 def create_student(student: Student):
 
-    # Hash password before storing it
-    hashed_password = password_hash.hash(student.password)
-
-    connection = psycopg2.connect(
-        host=os.getenv("DB_HOST"),
-        port=os.getenv("DB_PORT"),
-        database=os.getenv("DB_NAME"),
-        user=os.getenv("DB_USER"),
-        password=os.getenv("DB_PASSWORD")
+    hashed_password = password_hash.hash(
+        student.password
     )
+
+    connection = get_connection()
 
     cursor = connection.cursor()
 
     cursor.execute(
         """
         INSERT INTO students
-        (full_name, email, password_hash, college, degree, year_of_study)
+        (
+            full_name,
+            email,
+            password_hash,
+            college,
+            degree,
+            year_of_study
+        )
         VALUES (%s, %s, %s, %s, %s, %s)
         RETURNING student_id;
         """,
@@ -109,4 +142,58 @@ def create_student(student: Student):
     return {
         "message": "ARUX student profile created successfully!",
         "student_id": student_id
+    }
+
+
+# -----------------------------
+# Student Login
+# -----------------------------
+
+@app.post("/login")
+def login_student(login: LoginRequest):
+
+    connection = get_connection()
+
+    cursor = connection.cursor()
+
+    cursor.execute(
+        """
+        SELECT
+            student_id,
+            full_name,
+            password_hash
+        FROM students
+        WHERE email = %s;
+        """,
+        (login.email,)
+    )
+
+    student = cursor.fetchone()
+
+    cursor.close()
+    connection.close()
+
+    if not student:
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid email or password."
+        )
+
+    student_id = student[0]
+    full_name = student[1]
+    stored_password_hash = student[2]
+
+    if not password_hash.verify(
+        login.password,
+        stored_password_hash
+    ):
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid email or password."
+        )
+
+    return {
+        "message": "Login successful!",
+        "student_id": student_id,
+        "full_name": full_name
     }

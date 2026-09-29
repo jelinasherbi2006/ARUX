@@ -86,9 +86,20 @@ function Register() {
           border: "1px solid #202b45",
         }}
       >
-        <h1 style={{ marginBottom: "10px" }}>
-          Create Your ARUX Profile
-        </h1>
+        <h1
+  style={{
+    fontSize: "48px",
+    lineHeight: "1.2",
+    margin: "0 0 10px 0",
+    textAlign: "center",
+    color: "white",
+    fontWeight: "700",
+  }}
+>
+  Create Your ARUX
+  <br />
+  Profile
+</h1>
 
         <p
           style={{
