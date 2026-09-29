@@ -1,9 +1,11 @@
 import { useState } from "react";
 import Register from "./Register";
 import Login from "./LoginPage.jsx";
+import Dashboard from "./Dashboard.jsx";
 
 function App() {
   const [page, setPage] = useState("home");
+  const [student, setStudent] = useState(null);
 
   // REGISTER PAGE
   if (page === "register") {
@@ -14,12 +16,17 @@ function App() {
   if (page === "login") {
     return (
       <Login
-        onLoginSuccess={(student) => {
-          alert(`Welcome ${student.full_name}!`);
-          setPage("home");
+        onLoginSuccess={(loggedInStudent) => {
+          setStudent(loggedInStudent);
+          setPage("dashboard");
         }}
       />
     );
+  }
+
+  // DASHBOARD PAGE
+  if (page === "dashboard") {
+    return <Dashboard student={student} />;
   }
 
   // HOME PAGE
@@ -70,11 +77,11 @@ function App() {
         </button>
       </header>
 
-      {/* HERO SECTION */}
+      {/* HERO */}
       <main
         style={{
           maxWidth: "1200px",
-          margin: "100px auto 80px auto",
+          margin: "100px auto 80px",
           textAlign: "center",
         }}
       >
@@ -92,7 +99,7 @@ function App() {
         <h2
           style={{
             fontSize: "56px",
-            margin: "0 0 25px 0",
+            margin: "0 0 25px",
             lineHeight: "1.15",
             color: "white",
             fontWeight: "700",
@@ -119,7 +126,7 @@ function App() {
           evolving career profile and guide your next career move.
         </p>
 
-        {/* ONLY GET STARTED BUTTON */}
+        {/* GET STARTED */}
         <div
           style={{
             display: "flex",
@@ -145,7 +152,7 @@ function App() {
         </div>
       </main>
 
-      {/* FEATURE CARDS */}
+      {/* FEATURES */}
       <section
         style={{
           maxWidth: "1200px",
@@ -155,7 +162,6 @@ function App() {
           gap: "20px",
         }}
       >
-        {/* CAREER DNA */}
         <div
           style={{
             background: "#11182b",
@@ -165,20 +171,12 @@ function App() {
             textAlign: "center",
           }}
         >
-          <h3
-            style={{
-              fontSize: "22px",
-              marginBottom: "15px",
-            }}
-          >
-            Career DNA
-          </h3>
+          <h3>Career DNA</h3>
 
           <p
             style={{
               color: "#aab4cc",
               lineHeight: "1.6",
-              margin: 0,
             }}
           >
             Build a dynamic profile based on your skills,
@@ -186,7 +184,6 @@ function App() {
           </p>
         </div>
 
-        {/* SKILL GAP */}
         <div
           style={{
             background: "#11182b",
@@ -196,20 +193,12 @@ function App() {
             textAlign: "center",
           }}
         >
-          <h3
-            style={{
-              fontSize: "22px",
-              marginBottom: "15px",
-            }}
-          >
-            Skill Gap Analysis
-          </h3>
+          <h3>Skill Gap Analysis</h3>
 
           <p
             style={{
               color: "#aab4cc",
               lineHeight: "1.6",
-              margin: 0,
             }}
           >
             Identify the skills you need to develop for
@@ -217,7 +206,6 @@ function App() {
           </p>
         </div>
 
-        {/* CAREER MATCHING */}
         <div
           style={{
             background: "#11182b",
@@ -227,20 +215,12 @@ function App() {
             textAlign: "center",
           }}
         >
-          <h3
-            style={{
-              fontSize: "22px",
-              marginBottom: "15px",
-            }}
-          >
-            Career Matching
-          </h3>
+          <h3>Career Matching</h3>
 
           <p
             style={{
               color: "#aab4cc",
               lineHeight: "1.6",
-              margin: 0,
             }}
           >
             Discover career paths and opportunities that

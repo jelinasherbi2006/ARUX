@@ -10,13 +10,22 @@ load_dotenv()
 
 app = FastAPI()
 
+
+# -----------------------------
+# CORS
+# -----------------------------
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 password_hash = PasswordHash.recommended()
 
@@ -63,7 +72,9 @@ def get_connection():
 
 @app.get("/")
 def home():
-    return {"message": "Welcome to ARUX!"}
+    return {
+        "message": "Welcome to ARUX!"
+    }
 
 
 # -----------------------------
@@ -74,7 +85,6 @@ def home():
 def db_test():
 
     connection = get_connection()
-
     cursor = connection.cursor()
 
     cursor.execute(
@@ -105,7 +115,6 @@ def create_student(student: Student):
     )
 
     connection = get_connection()
-
     cursor = connection.cursor()
 
     cursor.execute(
@@ -153,7 +162,6 @@ def create_student(student: Student):
 def login_student(login: LoginRequest):
 
     connection = get_connection()
-
     cursor = connection.cursor()
 
     cursor.execute(

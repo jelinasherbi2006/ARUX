@@ -2,66 +2,74 @@ import { useState } from "react";
 
 function Register() {
   const [formData, setFormData] = useState({
-    fullName: "",
+    full_name: "",
     email: "",
     password: "",
+    date_of_birth: "",
     college: "",
     degree: "",
-    yearOfStudy: "",
+    year_of_study: "",
   });
 
   const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleChange = (event) => {
+  const handleChange = (e) => {
     setFormData({
       ...formData,
-      [event.target.name]: event.target.value,
+      [e.target.name]: e.target.value,
     });
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
     setMessage("");
-    setError("");
+    setLoading(true);
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/students", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          full_name: formData.fullName,
-          email: formData.email,
-          password: formData.password,
-          college: formData.college,
-          degree: formData.degree,
-          year_of_study: Number(formData.yearOfStudy),
-        }),
-      });
+      const response = await fetch(
+        "/api/students",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            full_name: formData.full_name,
+            email: formData.email,
+            password: formData.password,
+            college: formData.college,
+            degree: formData.degree,
+            year_of_study: Number(formData.year_of_study),
+          }),
+        }
+      );
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.detail || "Something went wrong.");
+        throw new Error(data.detail || "Registration failed");
       }
 
       setMessage(
-        `Profile created successfully! Student ID: ${data.student_id}`
+        "Profile created successfully! You can now login."
       );
 
       setFormData({
-        fullName: "",
+        full_name: "",
         email: "",
         password: "",
+        date_of_birth: "",
         college: "",
         degree: "",
-        yearOfStudy: "",
+        year_of_study: "",
       });
     } catch (error) {
-      setError(error.message);
+      console.error("Registration error:", error);
+      setMessage(error.message || "Failed to fetch");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -71,134 +79,138 @@ function Register() {
         minHeight: "100vh",
         background: "#0b1020",
         color: "white",
-        fontFamily: "Arial, sans-serif",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
         padding: "40px",
         boxSizing: "border-box",
+        fontFamily: "Arial, sans-serif",
       }}
     >
       <div
         style={{
-          maxWidth: "550px",
-          margin: "40px auto",
+          width: "100%",
+          maxWidth: "520px",
           background: "#11182b",
           padding: "40px",
           borderRadius: "18px",
           border: "1px solid #202b45",
+          boxSizing: "border-box",
         }}
       >
         <h1
-  style={{
-    fontSize: "48px",
-    lineHeight: "1.2",
-    margin: "0 0 10px 0",
-    textAlign: "center",
-    color: "white",
-    fontWeight: "700",
-  }}
->
-  Create Your ARUX
-  <br />
-  Profile
-</h1>
+          style={{
+            fontSize: "42px",
+            lineHeight: "1.2",
+            margin: "0 0 10px 0",
+            textAlign: "center",
+            color: "white",
+            fontWeight: "700",
+          }}
+        >
+          Create Your ARUX
+          <br />
+          Profile
+        </h1>
 
         <p
           style={{
+            textAlign: "center",
             color: "#aab4cc",
             marginBottom: "30px",
           }}
         >
-          Start building your Career DNA.
+          Start building your Career DNA
         </p>
 
         <form onSubmit={handleSubmit}>
-          <label>Full Name</label>
           <input
             type="text"
-            name="fullName"
-            placeholder="Enter your name"
-            value={formData.fullName}
+            name="full_name"
+            placeholder="Full Name"
+            value={formData.full_name}
             onChange={handleChange}
-            style={inputStyle}
             required
+            style={inputStyle}
           />
 
-          <label>Email</label>
           <input
             type="email"
             name="email"
-            placeholder="Enter your email"
+            placeholder="Email"
             value={formData.email}
             onChange={handleChange}
-            style={inputStyle}
             required
+            style={inputStyle}
           />
 
-          <label>Password</label>
           <input
             type="password"
             name="password"
-            placeholder="Create a password"
+            placeholder="Password"
             value={formData.password}
             onChange={handleChange}
-            style={inputStyle}
             required
+            style={inputStyle}
           />
 
-          <label>College</label>
+          <input
+            type="date"
+            name="date_of_birth"
+            value={formData.date_of_birth}
+            onChange={handleChange}
+            style={inputStyle}
+          />
+
           <input
             type="text"
             name="college"
-            placeholder="Enter your college"
+            placeholder="College"
             value={formData.college}
             onChange={handleChange}
-            style={inputStyle}
             required
+            style={inputStyle}
           />
 
-          <label>Degree</label>
           <input
             type="text"
             name="degree"
-            placeholder="Example: B.E. CSE"
+            placeholder="Degree"
             value={formData.degree}
             onChange={handleChange}
-            style={inputStyle}
             required
+            style={inputStyle}
           />
 
-          <label>Year of Study</label>
-          <select
-            name="yearOfStudy"
-            value={formData.yearOfStudy}
+          <input
+            type="number"
+            name="year_of_study"
+            placeholder="Year of Study"
+            value={formData.year_of_study}
             onChange={handleChange}
-            style={inputStyle}
+            min="1"
+            max="6"
             required
-          >
-            <option value="" disabled>
-              Select your year
-            </option>
-            <option value="1">1st Year</option>
-            <option value="2">2nd Year</option>
-            <option value="3">3rd Year</option>
-            <option value="4">4th Year</option>
-          </select>
+            style={inputStyle}
+          />
 
           <button
             type="submit"
+            disabled={loading}
             style={{
               width: "100%",
               padding: "15px",
-              marginTop: "15px",
-              border: "none",
+              marginTop: "10px",
               borderRadius: "10px",
+              border: "none",
               background: "#4f8cff",
               color: "white",
               fontSize: "16px",
               fontWeight: "bold",
-              cursor: "pointer",
+              cursor: loading ? "not-allowed" : "pointer",
             }}
           >
-            Create ARUX Profile
+            {loading ? "Creating..." : "Create ARUX Profile"}
           </button>
         </form>
 
@@ -206,23 +218,13 @@ function Register() {
           <p
             style={{
               marginTop: "20px",
-              color: "#4ade80",
               textAlign: "center",
+              color: message.includes("successfully")
+                ? "#5ee6a8"
+                : "#ff7b7b",
             }}
           >
             {message}
-          </p>
-        )}
-
-        {error && (
-          <p
-            style={{
-              marginTop: "20px",
-              color: "#ff6b6b",
-              textAlign: "center",
-            }}
-          >
-            {error}
           </p>
         )}
       </div>
@@ -232,15 +234,15 @@ function Register() {
 
 const inputStyle = {
   width: "100%",
-  padding: "13px",
-  marginTop: "8px",
-  marginBottom: "20px",
+  padding: "14px",
+  marginBottom: "15px",
   boxSizing: "border-box",
   borderRadius: "8px",
-  border: "1px solid #34415f",
+  border: "1px solid #2a3655",
   background: "#0b1020",
   color: "white",
   fontSize: "15px",
+  outline: "none",
 };
 
 export default Register;
